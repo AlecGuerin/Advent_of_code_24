@@ -92,8 +92,7 @@ def get_weighted_correspondence(sorted_left: np.ndarray, sorted_right: np.ndarra
         else:
             filtered_left.append(sorted_left[i])  # Add the value to check
             while last_ind < sorted_right.size and sorted_right[last_ind] <= sorted_left[i]:
-                if sorted_left[i] == sorted_right[last_ind]:  # Count the same occurrences
-                    same_cnt += 1
+                same_cnt += sorted_left[i] == sorted_right[last_ind]
                 last_ind += 1  # Update the next index to check on the right
 
             res += sorted_left[i] * same_cnt  # Compute the result
