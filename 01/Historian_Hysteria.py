@@ -1,5 +1,7 @@
 import sys
+import time
 import numpy as np
+
 
 def get_inputs(path: str):
     """
@@ -82,15 +84,16 @@ def get_weighted_correspondence(sorted_left: np.ndarray, sorted_right: np.ndarra
     filtered_left = []
     res = 0
     last_ind = 0
+    curent_val = 0
 
     # Go through all left array elements
     for i in range(sorted_left.size):
         same_cnt = 0
-        # Check if the value has already been counted
-        if sorted_left[i] in filtered_left:
+        # Check if the value has already been counted using the ordered property of left array
+        if curent_val == sorted_left[i]:
             continue
         else:
-            filtered_left.append(sorted_left[i])  # Add the value to check
+            curent_val = sorted_left[i] # Update the value to check
             while last_ind < sorted_right.size and sorted_right[last_ind] <= sorted_left[i]:
                 same_cnt += sorted_left[i] == sorted_right[last_ind]
                 last_ind += 1  # Update the next index to check on the right
@@ -121,31 +124,58 @@ def write_out_file(file: str, output):
         sys.exit(1)
 
 
+def print_timing(times):
+    times = [time_val * 1000 for time_val in times]
+
+    print("----------- Timing -----------")
+    print(" "*4 + "Loading: {}ms | Sorting: {}ms | Difference: {}ms | Weight: {}ms".format(
+        (times[1] - times[0]),   # Loading time
+        (times[2] - times[1]),   # Sorting time
+        (times[3] - times[2]),   # Difference time
+        (times[4] - times[3])    # Weight time
+    ))
+    print(" "*4 + "Total: {}ms | Computed: {}ms".format(
+        (times[4] - times[0]),   # Total time
+        (times[4] - times[1])    # Computed time
+    ))
+    print("------------------------------")
+
+
 if __name__ == '__main__':
+
     # Get default paths
     in_file = "inputs.data"
     out_file = "outputs.data"
 
     res = []
+    times = [0, 0, 0, 0, 0]
 
     try:
+        times[0] = time.perf_counter()
         # Get the inputs as left and right numpy arrays
         ar_l, ar_r = get_inputs(in_file)
 
+        times[1] = time.perf_counter()
         # Sort the arrays
         sorted_left = np.sort(ar_l)
         sorted_right = np.sort(ar_r)
 
+        times[2] = time.perf_counter()
         # Get the accumulated distances element-wise of the arrays
-        res.append(get_diff_acc(sorted_left, sorted_right))    
-        print(f"The accumulated distances element-wise of the arrays is: {res[0]}")
+        res.append(get_diff_acc(sorted_left, sorted_right))
 
+        times[3] = time.perf_counter()
         # Get the accumulation of the weighted correspondence
         res.append(get_weighted_correspondence(sorted_left, sorted_right))
+        times[4] = time.perf_counter()
+
+        print(f"The accumulated distances element-wise of the arrays is: {res[0]}")
         print(f"The accumulated weighted correspondence of the arrays is: {res[1]}")
 
         # Save the results
         write_out_file(out_file, res)
+
+        print_timing(times)
 
     except Exception as e:
         print(f"An error occurred: {e}")
