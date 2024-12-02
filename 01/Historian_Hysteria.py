@@ -1,6 +1,11 @@
+import os
 import sys
 import time
 import numpy as np
+
+# Quick and dirty
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from advent_utilities import write_out_file
 
 
 def get_inputs(path: str):
@@ -60,9 +65,6 @@ def get_diff_acc(s_ar_l: np.ndarray, s_ar_r: np.ndarray) -> int:
     Returns:
         int: Sum of the absolute differences element-wise of the provided arrays.
     """
-    if s_ar_l.size != s_ar_r.size:
-        raise ValueError("Arrays must have the same size.")
-    
     res = 0
     for i in range(s_ar_l.size):
         res += abs(s_ar_l[i] - s_ar_r[i])
@@ -84,16 +86,15 @@ def get_weighted_correspondence(sorted_left: np.ndarray, sorted_right: np.ndarra
     filtered_left = []
     res = 0
     last_ind = 0
-    curent_val = 0
+    current_val = 0
 
     # Go through all left array elements
     for i in range(sorted_left.size):
-        same_cnt = 0
-        # Check if the value has already been counted using the ordered property of left array
-        if curent_val == sorted_left[i]:
+        same_cnt = 0        
+        if current_val == sorted_left[i]: # Check if the value has already been counted using the ordered property of left array
             continue
         else:
-            curent_val = sorted_left[i] # Update the value to check
+            current_val = sorted_left[i] # Update the value to check
             while last_ind < sorted_right.size and sorted_right[last_ind] <= sorted_left[i]:
                 same_cnt += sorted_left[i] == sorted_right[last_ind]
                 last_ind += 1  # Update the next index to check on the right
@@ -105,23 +106,6 @@ def get_weighted_correspondence(sorted_left: np.ndarray, sorted_right: np.ndarra
             break
     
     return res
-
-
-def write_out_file(file: str, output):
-    """
-    Write the output file with the provided output.
-
-    Parameters:
-        file (str): File path.
-        output (list): List of values to write.
-    """
-    try:
-        with open(file, "w") as f:
-            for data in output:
-                f.write(str(data) + "\n")
-    except Exception as e:
-        print(f"Error writing to file '{file}': {e}")
-        sys.exit(1)
 
 
 def print_timing(times):
@@ -144,10 +128,10 @@ def print_timing(times):
 if __name__ == '__main__':
 
     # Get default paths
-    in_file = "inputs.data"
-    out_file = "outputs.data"
+    in_file = "01/inputs.data"
+    out_file = "01/outputs.data"
 
-    res = []
+    res = [0,0]
     times = [0, 0, 0, 0, 0]
 
     try:
@@ -162,11 +146,11 @@ if __name__ == '__main__':
 
         times[2] = time.perf_counter()
         # Get the accumulated distances element-wise of the arrays
-        res.append(get_diff_acc(sorted_left, sorted_right))
+        res[0] = get_diff_acc(sorted_left, sorted_right)
 
         times[3] = time.perf_counter()
         # Get the accumulation of the weighted correspondence
-        res.append(get_weighted_correspondence(sorted_left, sorted_right))
+        res[1] = get_weighted_correspondence(sorted_left, sorted_right)
         times[4] = time.perf_counter()
 
         print(f"The accumulated distances element-wise of the arrays is: {res[0]}")
