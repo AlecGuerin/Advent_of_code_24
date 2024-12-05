@@ -32,7 +32,7 @@ def get_inputs(path: str):
     return res
 
 
-def compute_mull(str_of_interest: str, mull_regex:str = r"mull\(([0-9]{1,3}),([0-9]{1,3})\)"):
+def compute_mull(str_of_interest: str, mull_regex = r"mul\(([0-9]{1,3}),([0-9]{1,3})\)"):
     """
     Compute the mulltiplications in the provided string.
 
@@ -105,12 +105,12 @@ def print_timing(times: list) -> None:
     times = [time_val * 1000 for time_val in times]  # Convert seconds to milliseconds
 
     print("----------- Timing -----------")
-    print(" " * 4 + "Loading: {}ms | Total: {}ms | Valid: {}ms".format(
+    print(" " * 4 + "Loading: {:.3f}ms | Total: {:.3f}ms | Valid: {:.3f}ms".format(
         (times[1] - times[0]),   # Loading time
         (times[2] - times[1]),   # Total time
         (times[3] - times[2]),   # Valid time
     ))
-    print(" " * 4 + "Total: {}ms | Computed: {}ms".format(
+    print(" " * 4 + "Total: {:.3f}ms | Computed: {:.3f}ms".format(
         (times[-1] - times[0]),   # Total time
         (times[-1] - times[1])    # Computed time
     ))
