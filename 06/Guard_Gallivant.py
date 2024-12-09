@@ -90,7 +90,6 @@ def count_visited_pos(map, initPos):
             break
 
         if(map[nextPos[0]][nextPos[1]] == "#"):
-            next_dir = curPos[2]
             nextPos = [curPos[0], curPos[1], next_Dir[curPos[2]]]
 
         curPos = nextPos
