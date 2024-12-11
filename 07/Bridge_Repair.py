@@ -120,8 +120,6 @@ def operate_amc(data, expected_value):
         return True
     return False
 
-      
-
 
 def find_amc_operators(data):
     """
@@ -146,8 +144,6 @@ def find_amc_operators(data):
 
     print(f"res:{res} with {cnt} valid lines")
     return res
-
-
 
 
 def print_timing(times: list) -> None:
