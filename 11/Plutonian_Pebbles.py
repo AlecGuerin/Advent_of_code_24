@@ -2,8 +2,6 @@ import os
 import sys
 import time
 
-from multiprocessing import Pool, Manager
-
 # Quick and dirty
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from advent_utilities import write_out_file, print_timing
@@ -41,7 +39,7 @@ def get_inputs(path: str, test=False):
 
 def apply_rules(data, count):
     """
-    Naive rule application
+    Naive rule application.
     
     Note:
         Pretty slow, compuation grows exponentially with count.
@@ -110,7 +108,7 @@ def rule_rec(data, step, known):
     return res
 
 
-def apply_rule_rec(data, count):
+def apply_rule_rec(data, count, knownResDict = None):
     """
     Apply the rules to to given array.
 
@@ -123,66 +121,14 @@ def apply_rule_rec(data, count):
     """
     res = 0
     i = 1
-    knownResDict = {}
+    if knownResDict == None:
+        knownResDict = {}
     for d in data:
+
         res += rule_rec(d, count, knownResDict)
-        print(f"{i}/{len(data)} : {d}")
-        i+=1
+        # print(f"{i}/{len(data)} : {d}")
+        # i+=1
     return res
-
-
-def make_all_loops_mp(data, cnt, print_progress=False):
-    """
-    Perform all path search in different processes using multiprocessing with optional printing.
-    """
-
-    gRes = 0
-    visitedLen = cnt
-
-    # Shared manager dictionary for progress tracking
-    with Manager() as manager:
-        progress = manager.dict({"completed": 0})
-        lock = manager.Lock()
-
-        # Printing function
-        def print_status():
-            while progress["completed"] < visitedLen:
-                time.sleep(0.5)
-                with lock:
-                    print(f"\rProgress: {progress['completed']}/{visitedLen} tasks completed.", end="")
-            print("\nAll tasks completed.")
-
-        # Start the printing thread if needed
-        if print_progress:
-            from threading import Thread
-            print_thread = Thread(target=print_status)
-            print_thread.start()
-
-        # Use multiprocessing pool
-        with Pool() as pool:
-            results = pool.map(
-                loops_mt_wrapper,
-                []
-            )
-
-        # Wait for printing to finish
-        if print_progress:
-            print_thread.join()
-
-        gRes = sum(results)
-
-    return gRes
-
-
-def loops_mt_wrapper(args):
-    """
-    Wrapper function for multiprocessing to handle arguments unpacking and progress updates.
-    """
-    map, initPos, potentialPos, progress, lock = args
-    result = loops_mt(map, initPos, potentialPos)
-    with lock:
-        progress["completed"] += 1
-    return result
 
 
 if __name__ == '__main__':
@@ -202,12 +148,14 @@ if __name__ == '__main__':
     data = get_inputs(in_file, False)
     times[1] = time.perf_counter()
 
+    knownResDict = {}
+
     # Compute the 1st challenge
-    results[0] = apply_rule_rec(data, 25)
+    results[0] = apply_rule_rec(data, 25, knownResDict)
     times[2] = time.perf_counter()
 
     # Compute the 2nd challenge
-    results[1] = apply_rule_rec(data, 75)
+    results[1] = apply_rule_rec(data, 75, knownResDict)
     times[3] = time.perf_counter()
 
     print(f"First challenge : {results[0]}")
