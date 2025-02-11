@@ -10,7 +10,7 @@ from advent_utilities import write_out_file, print_timing
 sys.setrecursionlimit(10**6)
 
 MAX_VALUE = 10**24
-DIR = [[0,-1], [0, 1], [1, 0], [-1, 0]] # <, >,v,^
+DIR = [[0,-1], [0, 1], [1, 0], [-1, 0]] #<, >,v,^
 
 
 def get_inputs(path: str, test=False):
@@ -82,7 +82,7 @@ def combined(data, pos, dir, cost, path, validPath, best_res = MAX_VALUE, wasDea
     return best_res
 
 
-def cost_penaly(cd, nd):
+def cost_penalty(cd, nd):
     p0 = 1
     p1 = 1000
     p2 = -1 # 2000
@@ -120,9 +120,9 @@ def get_possible_next(data, pos, dir, cost, path):
     res=[]
     for i in range(4):
         nd = (dir+i)%4
-        np = [pos[0] + DIR[nd][0], pos[1] + DIR[nd][1]] # Next position        
+        np = [pos[0] + DIR[nd][0], pos[1] + DIR[nd][1]] # Next position
         if data[np[0]][np[1]]  != '#' and not_in_path(np, path):
-            p = cost_penaly(dir,nd)
+            p = cost_penalty(dir,nd)
             if p > 0:
                 res.append([np[0], np[1], nd, cost + p])
             # if p == 1:
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     times[0] = time.perf_counter()
 
     # Load inputs
-    data, initPos, destination = get_inputs(in_file, False)
+    data, initPos, destination = get_inputs(in_file, True)
     times[1] = time.perf_counter()
 
     # Compute the 1st challenge
